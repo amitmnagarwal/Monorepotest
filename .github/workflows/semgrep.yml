@@ -1,0 +1,62 @@
+name: Resuable workflow with Semgrep
+on:
+  push:
+  pull_request:
+  workflow_call:
+   secrets:
+      SEMGREP_APP_TOKEN:
+       required: true
+
+jobs:
+  semgrep:
+    # User definable name of this GitHub Actions job.
+    name: sast
+    # If you are self-hosting, change the following `runs-on` value: 
+    runs-on: ubuntu-latest
+
+    container:
+      # A Docker image with Semgrep installed. Do not change this.
+      image: returntocorp/semgrep
+
+    steps:
+      # Fetch project source with GitHub Actions Checkout.
+      - uses: actions/checkout@v3
+      # Run the "semgrep ci" command on the command line of the docker image.
+      - run: |
+          # Apps using beehive-RG
+          # export SEMGREP_REPO_NAME='beehive-RG'  
+          # semgrep ci --include='projects/beehive-RG/*'
+          # export SEMGREP_REPO_NAME='beehive-RGB'
+          # semgrep ci --include='projects/beehive-RGB/*'
+
+          # #beehive-monorepo
+          # export SEMGREP_REPO_NAME='beehive-monorepo'
+          # semgrep ci --exclude='projects/*'
+          
+          # export SEMGREP_REPO_NAME='beehive-RG'  
+          # #Updated 
+          # if [[ "$SEMGREP_REPO_NAME" == "beehive-monorepo" ]]; 
+          # then  
+          #    echo "beehive-monorepo"
+          #    semgrep ci --exclude='projects/*'
+          # else
+          #    echo "beehive- project repos   projects/${SEMGREP_REPO_NAME}/*"
+          #    semgrep ci --include="projects/${SEMGREP_REPO_NAME}/*"
+          # fi
+
+          # export SEMGREP_REPO_NAME='${{ vars.APP_NAME }}'
+          #Updated this corresponds to Onyx - platform code 
+          export SEMGREP_REPO_NAME='platform1'
+          echo $SEMGREP_REPO_NAME
+            if [[ $SEMGREP_REPO_NAME == 'platform1' ]]; 
+            then  
+               echo "platform1"
+               semgrep ci --exclude='projects/*' --include='projects/platform1'	--verbose
+            else 
+              # this corresponds to onyx - apps code 
+               echo "monorepotest   projects/${SEMGREP_REPO_NAME}/*"
+               semgrep ci --include="projects/${SEMGREP_REPO_NAME}/*" --verbose            
+            fi
+                   
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
