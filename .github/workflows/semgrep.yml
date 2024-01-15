@@ -51,7 +51,8 @@ jobs:
             if [[ $SEMGREP_REPO_NAME == 'platform1' ]]; 
             then  
                echo "platform1"
-               semgrep ci --exclude='projects/*' --include='projects/platform1'	--verbose
+              # semgrep ci --exclude='projects/*' --include='projects/platform1'	--verbose
+              semgrep ci --include='libs/platform1/*' --include='projects/platform1'	--verbose
             else 
               # this corresponds to onyx - apps code 
                echo "monorepotest   projects/${SEMGREP_REPO_NAME}/*"
